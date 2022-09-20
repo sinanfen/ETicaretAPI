@@ -9,39 +9,31 @@ namespace ETicaretAPI.API.Controllers
     [ApiController]
     public class ProductsController : ControllerBase
     {
-        private readonly IProductWriteRepository _productWriteRepository;
         private readonly IProductReadRepository _productReadRepository;
+        private readonly IProductWriteRepository _productWriteRepository;
 
-        public ProductsController(IProductWriteRepository productWriteRepository, IProductReadRepository productReadRepository)
+        private readonly IOrderWriteRepository _orderWriteRepository;
+        private readonly IOrderReadRepository _orderReadRepository;
+
+        private readonly ICustomerWriteRepository _customerWriteRepository;
+
+
+        public ProductsController(IOrderWriteRepository orderWriteRepository, IOrderReadRepository orderReadRepository, ICustomerWriteRepository customerWriteRepository, IProductReadRepository productReadRepository, IProductWriteRepository productWriteRepository)
         {
-            _productWriteRepository = productWriteRepository;
+            _orderWriteRepository = orderWriteRepository;
+            _orderReadRepository = orderReadRepository;
+            _customerWriteRepository = customerWriteRepository;
             _productReadRepository = productReadRepository;
+            _productWriteRepository = productWriteRepository;
         }
 
         [HttpGet]
         public async Task Get()
         {
-            //await _productWriteRepository.AddRangeAsync(new()
-            //{
-            //    new() {Id=Guid.NewGuid(), Name="Product 1", Price=100, CreatedDate=DateTime.UtcNow,Stock=10},
-            //    new() {Id=Guid.NewGuid(), Name="Product 2", Price=200, CreatedDate=DateTime.UtcNow,Stock=10},
-            //    new() {Id=Guid.NewGuid(), Name="Product 3", Price=300, CreatedDate=DateTime.UtcNow,Stock=10}
-            //});
-            //await _productWriteRepository.SaveAsync();
-
-            Product p = await _productReadRepository.GetByIdAsync("2b137644-3043-4cd5-bca2-3a4554df63d9",false);
-            p.Name = "Mehmet";
-            await _productWriteRepository.SaveAsync();
-            //ProductReadRepository ile elde etiğimiz veriyi ProductWriteRepository ile SaveAsync yapabilmemizi sağlayan sistem -> AddScoped sistemidir.
-            //ServiceRegistration.cs içinde tüm repositoryler (DbContext default olarak AddScoped kullanılıyor) Scoped olduğundan dolayı çalışacaktır.
-            //ProductWriteRepository, id Talep eden ile aynı instance'i kullanacaktır
+            Order order = await _orderReadRepository.GetByIdAsync("da1f1394-4058-4add-a5e6-b2c168b06c48");
+            order.Address = "İstanbul";
+            await _orderWriteRepository.SaveAsync();
         }
 
-        [HttpGet("{id}")]
-        public async Task<IActionResult> Get(string id)
-        {
-            Product product = await _productReadRepository.GetByIdAsync(id);
-            return Ok(product);
-        }
     }
 }
